@@ -1,0 +1,181 @@
+{% extends "layouts/default.html" %}
+
+{% block title %} Blank Page {% endblock title %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	theme: "light2",
+	title:{
+		text: ""
+	},
+	
+	axisX:{
+		valueFormatString: "####",
+		crosshair: {
+			enabled: true,
+			snapToDataPoint: true
+		}
+	},
+	axisY: {
+		title: "No. of TB cases",
+		crosshair: {
+			enabled: true
+        },
+        includeZero: false
+	},
+	  
+	legend:{
+		cursor:"pointer",
+		verticalAlign: "bottom",
+		horizontalAlign: "left",
+		dockInsidePlotArea: true,
+		itemclick: toogleDataSeries
+	},
+	data: [{
+		type: "line",
+		toolTipContent:" Year: {x}, TB cases: {y}, Smear +ve cases: {smearold}, Spread rate:{rateold}" ,
+		showInLegend: true,
+		name: "Prediction 1",
+		markerType: "circle",
+		xValueFormatString: "####",
+		color: "Black",
+		dataPoints: [
+        {% for x1,y1,s1,r1 in my_list %}
+				{ x:{{x1}},y:{{y1}},smearold:{{s1}},rateold:{{r1}} },
+			{% endfor %}	
+		]
+	},
+	{
+		type: "line",
+		toolTipContent:" Year: {x}, TB cases: {y}, Smear +ve cases: {smearnew}, Spread rate:{ratenew}" ,
+		showInLegend: true,
+		name: "Prediction 2",
+    color:"Blue",
+		lineDashType: "dot",
+		dataPoints: [
+        {% for x1,y1,s1,r1 in my_list_1 %}
+				{ x:{{x1}},y:{{y1}},smearnew:{{s1}},ratenew:{{r1}}  },
+			{% endfor %}
+		]
+	},
+    
+    {
+		type: "line",
+		toolTipContent:" Year: {x}, TB cases: {y}, Smear +ve cases: {smearnew}, Spread rate:{ratenew}" ,
+		showInLegend: true,
+		name: "Prediction 3",
+    color:"#00B4FF",
+		lineDashType: "dot",
+		dataPoints: [
+        {% for x1,y1,s1,r1 in my_list_2 %}
+				{ x:{{x1}},y:{{y1}},smearnew:{{s1}},ratenew:{{r1}}  },
+			{% endfor %}
+		]
+	}]
+});
+chart.render();
+
+function toogleDataSeries(e){
+	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	} else{
+		e.dataSeries.visible = true;
+	}
+	chart.render();
+}
+chart.render();
+}
+</script>
+
+</head>
+<body style="background-color:#F9F9F9;">
+<div>
+<div style="width:40%;float:left;">
+    District-wise Tb cases plot:
+    <h3>{{ title }}</h3>
+<div id="chartContainer" style="height: 370px;background-color:#F9F9F9;"></div>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script><br><br>
+<div  style="position:absolute;top:0 px; width:40%" >
+  <form action="" method="POST">
+    Pollution parameters:<br>
+    <label for="points">SO2:</label>
+    <input style="width:80px"type="number" id="points" name="so"value="0" step="1">%
+    <label for="points">NO2:</label>
+    <input style="width:80px"type="number" id="points" name="no" value="0" step="1">%
+    <label for="points">RSPM:</label>
+    <input style="width:80px"type="number" id="points" name="rspm" value="0" step="1">%<br><br>
+    Climate parameters:<br>
+    <label for="points">Rainfall:</label>
+    <input style="width:80px"type="number" id="points" name="rainfall"value="0" step="1">%
+    <label for="points">Temperature:</label>
+    <input style="width:80px"type="number" id="points" name="temperature" value="0" step="1">%
+    <label for="points">Humidity:</label>
+    <input style="width:80px"type="number" id="points" name="humidity" value="0" step="1">%&emsp;&emsp;<br><br>
+    <input type="submit" value="Predict"><br><br>
+  </form>
+  </div>
+  </div>
+  <div style="width:40%;float:right;position:absolute;right:100px;background-color:#F9F9F9;"class="container">
+    <div class="table-responsive">
+      <h1 align="center">TB spread rate after retrain </h1>
+      <br />
+      <div align="left">
+        <button type="button" name="load_data" id="load_data" class="btn btn-info">Load spread rate</button>
+      </div>
+      <br />
+      <div id="cases_table"></div>
+   </div>
+   </div>
+</div>
+
+</body>
+</html>
+<script>
+$(document).ready(function(){
+ $('#load_data').click(function(){
+  $.ajax({
+    
+   url:"{{title}}_retrain.csv",
+   dataType:"text",
+   success:function(data)
+   {
+    var employee_data = data.split(/\r?\n|\r/);
+    var table_data = '<table class="table table-bordered table-striped">';
+    for(var count = 0; count<employee_data.length; count++)
+    {
+     var cell_data = employee_data[count].split(",");
+     table_data += '<tr>';
+     for(var cell_count=0; cell_count<cell_data.length; cell_count++)
+     {
+      if(count === 0)
+      {
+       table_data += '<th>'+cell_data[cell_count]+'</th>';
+      }
+      else
+      {
+       table_data += '<td>'+cell_data[cell_count]+'</td>';
+      }
+     }
+     table_data += '</tr>';
+    }
+    table_data += '</table>';
+    $('#cases_table').html(table_data);
+   }
+  });
+ });
+ 
+});
+</script>
+{% endblock content %}

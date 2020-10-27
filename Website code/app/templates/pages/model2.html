@@ -1,0 +1,196 @@
+
+{% extends "layouts/default.html" %}
+
+{% block title %} Blank Page {% endblock title %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawChart1);
+      google.charts.setOnLoadCallback(drawChart2);
+      google.charts.setOnLoadCallback(drawChart3);
+      google.charts.setOnLoadCallback(drawChart4);
+      function drawChart1() {
+        var data = google.visualization.arrayToDataTable([
+          ['Length'],
+          {% for x1 in train_total %}
+				[{{x1}} ],
+			{% endfor %}
+          ]);
+
+        var options = {
+          title: 'Random Forest Regressor Error plot (Train model for Total Cases)',
+          legend: { position: 'none' },
+          hAxis: {
+    viewWindow: {
+        min: -1500,
+        max: 2000
+    },
+    
+}
+        };
+
+        var chart = new google.visualization.Histogram(document.getElementById('chart_div1'));
+        chart.draw(data, options);
+      }
+      function drawChart2() {
+        var data = google.visualization.arrayToDataTable([
+          ['Length'],
+          {% for x1 in test_total %}
+				[{{x1}} ],
+			{% endfor %}
+          ]);
+
+        var options = {
+          title: 'Random Forest Regressor Error plot (Test model for Total Cases)',
+          legend: { position: 'none' },
+          hAxis: {
+    viewWindow: {
+        min: -1000,
+        max: 2600
+    },
+          }
+        };
+
+        var chart = new google.visualization.Histogram(document.getElementById('chart_div2'));
+        chart.draw(data, options);
+      }
+      function drawChart3() {
+        var data = google.visualization.arrayToDataTable([
+          ['Length'],
+          {% for x1 in train_smear %}
+				[{{x1}} ],
+			{% endfor %}
+          ]);
+
+        var options = {
+          title: 'Random Forest Regressor Error plot (Train model for Smear positive Cases)',
+          legend: { position: 'none' },
+          hAxis: {
+    viewWindow: {
+        min: -500,
+        max: 700
+    },
+          }
+        };
+
+        var chart = new google.visualization.Histogram(document.getElementById('chart_div3'));
+        chart.draw(data, options);
+      }
+      function drawChart4() {
+        var data = google.visualization.arrayToDataTable([
+          [ 'Length'],
+          {% for x1 in test_smear %}
+				[{{x1}} ],
+			{% endfor %}
+          ]);
+
+        var options = {
+          title: 'Random Forest Regressor Error plot (Test model for Smear positive Cases)',
+          legend: { position: 'none' },
+          hAxis: {
+    viewWindow: {
+        min: -600,
+        max: 1000
+    },
+          }
+        };
+
+        var chart = new google.visualization.Histogram(document.getElementById('chart_div4'));
+        chart.draw(data, options);
+      }
+    </script>
+<style>
+
+li:last-child {
+  border-right: none;
+}
+
+li a:hover:not(.active) {
+  background-color: white;
+}
+table, th, td {
+  border: 1px solid black;
+}
+</style>
+</head>
+<body>
+
+<ul style="list-style-type: none;margin: 0;padding: 0;overflow: hidden;background-color: #EBEDEF;">
+  <li style="float: left;border-right:1px solid #bbb;"><a style="display: block;color: blue;text-align: center;padding: 14px 20px;text-decoration: none;background-color: #EBEDEF;" class="active" href="/stats.html">Gradient Boosting Regressor</a></li>
+  <li style="float: left;border-right:1px solid #bbb;"><a style="display: block;color: blue;text-align: center;padding: 14px 20px;text-decoration: none;" href="/model2.html">Random Forest Regressor</a></li>
+  <li style="float: left;border-right:1px solid #bbb;"><a style="display: block;color: blue;text-align: center;padding: 14px 20px;text-decoration: none;" href="/model3.html">Decision Tree Regressor</a></li>
+  <li style="float: left;border-right:1px solid #bbb;"><a style="display: block;color: blue;text-align: center;padding: 14px 20px;text-decoration: none;" href="/model4.html">XGB Regressor</a></li>
+  <li style="float: left;border-right:1px solid #bbb;"><a style="display: block;color: blue;text-align: center;padding: 14px 25px;text-decoration: none;" href="/model5.html">Neural Network model</a></li>
+</ul>
+<div id="chart_div1" style="width: 45%;float:left; height: 300px;"></div>
+<div id="chart_div2" style="width: 45%;float:right; height: 300px;"></div>
+
+<div id="chart_div3" style="width: 45%;float:left; height: 300px;"></div>
+<div id="chart_div4" style="width: 45%;float:right; height: 300px;"></div>
+<div>
+<div style="width:40%;float:left;">
+<h1>Specifications</h1>
+<table>
+  <tr>
+    <th>Total cases</th>
+    <th>Total smear positive cases</th>
+  </tr>
+  <tr>
+    <td><b>n_estimators</b> = 500, <br><b>min_samples_split</b> = 2,<br> <b>min_samples_leaf</b> = 10, <br> <b>max_features</b> = 'auto',<br> <b>max_depth</b> = 20,<br> <b>bootstrap</b> = True</td>
+    <td><b>n_estimators</b> = 250, <br><b>min_samples_split</b> = 2,<br> <b>min_samples_leaf</b> = 5, <br> <b>max_features</b> = 'auto',<br> <b>max_depth</b> = 17,<br> <b>bootstrap</b> = True</td>
+  </tr>
+</table>
+</div>
+
+<div style="width:40%;float:right;position:absolute;right:80px;top:735px;">
+<h1>Prediction</h1>
+
+<table>
+  <tr>
+    <th colspan="2">Total cases</th>
+    <th colspan="2">Total smear positive cases</th>
+  </tr>
+  <tr>
+  <th>Train Metrics</th>
+  <th>Test Metrics</th>
+  <th>Train Metrics</th>
+  <th>Test Metrics</th>
+  </tr>
+  <tr>
+    <td><b>mae train:</b> 226.50390528836164<br>
+<b>rmse train:</b> 342.4250251963304<br>
+<b>r2 train:</b> 0.8436404131767226
+</td>
+    <td>
+<b>mae test:</b> 270.52269578084514<br>
+<b>rmse test:</b> 397.0628512358639<br>
+<b>r2 test:</b> 0.6849710768822175
+
+</td>
+<td><b>mae train:</b> 100.6366748813406<br>
+<b>rmse train:</b> 141.28724789126156<br>
+<b>r2 train:</b> 0.8007487509605161
+</td>
+    <td>
+<b>mae test:</b> 113.00558645494951<br>
+<b>rmse test:</b> 159.04257778734294<br>
+<b>r2 test:</b> 0.7586862362079105
+
+</td>
+  </tr>
+</table>
+<br>
+<br>
+</div>
+</div>
+
+</body>
+</html>
+{% endblock content %}

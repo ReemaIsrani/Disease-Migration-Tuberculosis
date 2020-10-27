@@ -1,0 +1,57 @@
+
+{% extends "layouts/default.html" %}
+
+{% block title %} Blank Page {% endblock title %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!DOCTYPE HTML>
+<html>
+<head>
+<script>
+window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	exportEnabled: true,
+	animationEnabled: true,
+	title:{
+		text: "Districts in this zone"
+	},
+	legend:{
+		cursor: "pointer",
+		itemclick: explodePie
+	},
+	data: [{
+		type: "pie",
+		showInLegend: true,
+		toolTipContent: "{name}: Total cases: <strong>{y}</strong>, Smear +ve cases:<strong>{smear}</strong> ",
+		indexLabel: "{name} - {y}",
+		dataPoints: [
+        {% for y1,name1,s1 in df %}
+				{ y:{{y1}},name:'{{name1}}',smear:{{s1}} },
+			{% endfor %}
+		]
+	}]
+});
+chart.render();
+}
+
+function explodePie (e) {
+	if(typeof (e.dataSeries.dataPoints[e.dataPointIndex].exploded) === "undefined" || !e.dataSeries.dataPoints[e.dataPointIndex].exploded) {
+		e.dataSeries.dataPoints[e.dataPointIndex].exploded = true;
+	} else {
+		e.dataSeries.dataPoints[e.dataPointIndex].exploded = false;
+	}
+	e.chart.render();
+
+}
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 500px; width: 100%;"></div>
+<p style="text-align: center; font-size: 20px;"><b>RSPM:</b> {{rspm}}, <b>SO2:</b> {{so2}}, <b>NO2:</b> {{no2}}, <b>Rainfall:</b> {{rainfall}}, <b>Temperature:</b> {{temperature}}, <b>Humidity:</b> {{humidity}}</p>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</body>
+</html>
+{% endblock content %}

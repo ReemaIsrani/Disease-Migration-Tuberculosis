@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script>
+            function pass_values(id) {
+                x=document.getElementById(id).value;
+                var parameter_change = [x]
+                var old_list={{ ['rspm_satisfactory','no2_safe','so2_safe','rainfall_low','humidity_low','temperature_low'] | safe }};
+                $.ajax(
+                {
+                    type:'POST',
+                    contentType:'application/json;charset-utf-08',
+                    dataType:'text',
+                    url:'http://127.0.0.1:5000/pass_val?value_change='+parameter_change+'&id='+id+'&list='+old_list ,
+                    success:function (data) {
+                        alert(data)
+                        var reply=data.reply;
+                        if (reply=="success")
+                        {
+                            return;
+                        }
+                        else
+                            {
+                            alert("some error ocured in session agent")
+                            }
+
+                    }
+                }
+            );
+}
+</script>
+    </head>
+    <body>
+        <select id="rspm" name="RSPM" onchange="pass_values(this.id)">
+            <option>rspm_good</option>
+<option>rspm_satisfactory</option>
+<option>rspm_moderate</option>
+<option>rspm_poor</option>
+<option>rspm_severe</option>
+        </select>
+         
+    </body>
+</html>
