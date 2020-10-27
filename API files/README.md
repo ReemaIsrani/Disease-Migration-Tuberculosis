@@ -3,13 +3,21 @@ File Description
 dm_api.py
 Flask API code for strategic planning.
 Input - 
+
 ●	Location
+
 Percent increase or decrease in:
+
 ●	RSPM
+
 ●	SO2
+
 ●	NO2
+
 ●	Rainfall
+
 ●	Relative Humidity
+
 ●	Average Temperature
 Output -
 Yearly new prediction of the given location with respective increase/decrease in input parameters.
